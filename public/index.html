@@ -3,45 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çoklu Bot Paneli</title>
+    <title>Minecraft Multi-Bot Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #1e1e1e; color: #fff; margin: 0; padding: 20px; }
-        .header { display: flex; justify-content: space-between; background: #2d2d2d; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .btn { padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; color: white; }
-        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .card { background: #2d2d2d; padding: 15px; border-radius: 8px; }
-        input, select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; background: #444; border: 1px solid #555; color: white; box-sizing: border-box; }
-        .terminal { background: #000; color: #0f0; height: 150px; overflow-y: auto; padding: 10px; font-family: monospace; font-size: 12px; margin-bottom: 10px; }
-        .flex-row { display: flex; gap: 10px; }
-        .data-box { background: #111; padding: 5px; font-size: 11px; height: 100px; overflow-y: auto; margin-top: 10px;}
+        :root {
+            --bg: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-success: #10b981;
+            --accent-danger: #f43f5e;
+            --accent-cyan: #06b6d4;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text-main); min-height: 100vh; padding: 16px; background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), transparent 50%); }
+
+        .navbar { display: flex; flex-direction: column; gap: 12px; background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--card-border); padding: 16px; border-radius: 16px; margin-bottom: 20px; }
+        @media(min-width: 640px) { .navbar { flex-direction: row; justify-content: space-between; align-items: center; } }
+
+        .title-group h1 { font-size: 20px; font-weight: 700; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stats-badge { display: flex; gap: 12px; font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .stats-badge span { color: var(--text-main); font-weight: 600; }
+
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { border: none; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn:active { transform: scale(0.97); }
+        .btn-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .btn-success:hover { background: #10b981; color: #fff; }
+        .btn-danger { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .btn-danger:hover { background: #f43f5e; color: #fff; }
+        .btn-primary { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+
+        .card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 20px; }
+
+        .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media(min-width: 768px) { .grid { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); } }
+
+        .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-online { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-offline { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+        .input-field { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; color: #fff; font-size: 13px; outline: none; transition: border 0.2s; }
+        .input-field:focus { border-color: var(--accent-primary); }
+
+        .terminal-box { background: #05070d; border: 1px solid var(--card-border); border-radius: 10px; height: 160px; padding: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+        .log-info { color: #818cf8; }
+        .log-success { color: #34d399; }
+        .log-warn { color: #fbbf24; }
+        .log-error { color: #f87171; }
+        .log-chat { color: #e2e8f0; }
+
+        .data-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; margin-top: 10px; }
+        .data-box { background: #05070d; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; height: 80px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; }
+        .data-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div>
-            <h2>Bot Kontrol Paneli</h2>
-            <p>Toplam Kayıtlı Bot: <span id="total-bots">0</span> | Aktif Bot: <span id="active-bots">0</span></p>
+    <div class="navbar">
+        <div class="title-group">
+            <h1>Minecraft Control Hub</h1>
+            <div class="stats-badge">
+                <div>Kayıtlı Bot: <span id="total-bots">0</span></div>
+                <div>Aktif: <span id="active-bots" style="color:#10b981;">0</span></div>
+            </div>
         </div>
-        <div>
-            <button class="btn btn-green" onclick="socket.emit('start_all')">Tümünü Başlat</button>
-            <button class="btn btn-red" onclick="socket.emit('stop_all')">Tümünü Durdur</button>
-            <button class="btn btn-blue" onclick="addNewBot()">Yeni Bot Ekle</button>
-        </div>
-    </div>
-
-    <!-- GLOBAL TERMİNAL -->
-    <div class="card" style="margin-bottom: 20px;">
-        <h3>Global Terminal (Tüm Botlara Gönder)</h3>
-        <div id="global-terminal" class="terminal"></div>
-        <div class="flex-row">
-            <input type="text" id="global-cmd" placeholder="Tüm botlar için komut/mesaj yazın...">
-            <button class="btn btn-blue" onclick="sendGlobalCmd()">Gönder</button>
+        <div class="btn-group">
+            <button class="btn btn-success" onclick="socket.emit('start_all')">Tümünü Başlat</button>
+            <button class="btn btn-danger" onclick="socket.emit('stop_all')">Tümünü Durdur</button>
+            <button class="btn btn-primary" onclick="addNewBot()">+ Yeni Bot</button>
         </div>
     </div>
 
-    <!-- BOTLARIN LİSTELENDİĞİ ALAN -->
+    <!-- GLOBAL TERMINAL -->
+    <div class="card">
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--accent-cyan);">Global Terminal (Tüm Botlara Gönder)</div>
+        <div id="global-terminal" class="terminal-box"></div>
+        <div style="display:flex; gap: 8px;">
+            <input type="text" id="global-cmd" class="input-field" placeholder="Tüm botlar için komut/mesaj girin (/gir asmp vb)...">
+            <button class="btn btn-primary" onclick="sendGlobalCmd()">Gönder</button>
+        </div>
+    </div>
+
+    <!-- BOT CARDS -->
     <div id="bots-container" class="grid"></div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -56,55 +104,78 @@
         });
 
         socket.on('bot_status', (data) => {
-            const statusEl = document.getElementById(`status-${data.id}`);
-            if(statusEl) statusEl.innerText = data.status;
-            statusEl.style.color = data.status === 'Online' ? '#28a745' : '#dc3545';
+            const el = document.getElementById(`status-${data.id}`);
+            if (el) {
+                el.innerText = data.status;
+                el.className = `status-pill status-${data.status.toLowerCase()}`;
+            }
         });
 
         socket.on('terminal_log', (data) => {
             const termId = data.id === 'all' ? 'global-terminal' : `term-${data.id}`;
             const term = document.getElementById(termId);
-            if(term) {
-                term.innerHTML += `<div>${data.msg}</div>`;
+            if (term) {
+                const line = document.createElement('div');
+                line.className = `log-${data.type || 'chat'}`;
+                line.innerText = data.msg;
+                term.appendChild(line);
                 term.scrollTop = term.scrollHeight;
+            }
+        });
+
+        socket.on('radar_update', (data) => {
+            const radar = document.getElementById(`radar-${data.id}`);
+            if(radar) {
+                const div = document.createElement('div');
+                div.style.color = '#06b6d4';
+                div.innerText = `👁 ${data.entity}`;
+                radar.appendChild(div);
+                radar.scrollTop = radar.scrollHeight;
             }
         });
 
         socket.on('uptime_update', (uptimes) => {
             document.getElementById('active-bots').innerText = Object.keys(uptimes).length;
-            for(let id in uptimes) {
+            for (let id in uptimes) {
                 const el = document.getElementById(`uptime-${id}`);
-                if(el) el.innerText = uptimes[id];
+                if (el) el.innerText = uptimes[id];
             }
         });
 
         function addNewBot() {
             const id = 'bot_' + Date.now();
-            bots[id] = { id, ip: '', version: '1.20.6', login: '', subServer: '', autoReconnect: true };
-            saveBot(id);
+            bots[id] = { id, ip: 'oyna.aesirmc.com', version: '1.20.6', login: 'Bot_' + Math.floor(Math.random()*100), subServer: 'asmp' };
+            socket.emit('save_bot', bots[id]);
         }
 
         function saveBot(id) {
-            const botData = bots[id] || { id };
-            if(document.getElementById(`ip-${id}`)) {
-                botData.ip = document.getElementById(`ip-${id}`).value;
-                botData.version = document.getElementById(`ver-${id}`).value;
-                botData.login = document.getElementById(`login-${id}`).value;
-                botData.subServer = document.getElementById(`sub-${id}`).value;
+            bots[id].ip = document.getElementById(`ip-${id}`).value;
+            bots[id].version = document.getElementById(`ver-${id}`).value;
+            bots[id].login = document.getElementById(`login-${id}`).value;
+            bots[id].subServer = document.getElementById(`sub-${id}`).value;
+            socket.emit('save_bot', bots[id]);
+        }
+
+        function deleteBot(id) {
+            if(confirm('Botu silmek istediğinize emin misiniz?')) {
+                socket.emit('delete_bot', id);
             }
-            socket.emit('save_bot', botData);
         }
 
         function sendBotCmd(id) {
             const cmd = document.getElementById(`cmd-${id}`).value;
-            socket.emit('send_command', { target: id, command: cmd });
-            document.getElementById(`cmd-${id}`).value = '';
+            if(cmd) {
+                socket.emit('send_command', { target: id, command: cmd });
+                document.getElementById(`cmd-${id}`).value = '';
+            }
         }
 
         function sendGlobalCmd() {
             const cmd = document.getElementById('global-cmd').value;
-            socket.emit('send_command', { target: 'all', command: cmd });
-            document.getElementById('global-cmd').value = '';
+            if(cmd) {
+                socket.emit('send_command', { target: 'all', command: cmd });
+                document.getElementById('global-cmd').value = '';
+            }
         }
 
         function renderBots() {
@@ -114,39 +185,42 @@
                 const b = bots[id];
                 container.innerHTML += `
                     <div class="card">
-                        <div style="display:flex; justify-content:space-between;">
-                            <h3>Bot: ${b.login || 'Yeni Bot'}</h3>
-                            <span id="status-${id}" style="color:red; font-weight:bold;">Offline</span>
-                        </div>
-                        <p style="font-size: 12px;">Süre: <span id="uptime-${id}" style="color:#0dcaf0;">0s 0dk</span></p>
-                        
-                        <div class="flex-row">
-                            <input type="text" id="login-${id}" placeholder="Kullanıcı Adı" value="${b.login}" onchange="saveBot('${id}')">
-                            <input type="text" id="ver-${id}" placeholder="Sürüm (örn: 1.21.11)" value="${b.version}" onchange="saveBot('${id}')">
-                        </div>
-                        <input type="text" id="ip-${id}" placeholder="Sunucu IP" value="${b.ip}" onchange="saveBot('${id}')">
-                        <input type="text" id="sub-${id}" placeholder="Alt Sunucu Adı (Örn: faction) - /gir komutu ile girer" value="${b.subServer || ''}" onchange="saveBot('${id}')">
-                        
-                        <div class="flex-row" style="margin-bottom:10px;">
-                            <button class="btn btn-green" style="flex:1;" onclick="socket.emit('start_bot', '${id}')">Başlat</button>
-                            <button class="btn btn-red" style="flex:1;" onclick="socket.emit('stop_bot', '${id}')">Durdur</button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                            <div style="font-weight:700; font-size:15px; color:#f3f4f6;">${b.login || 'İsimsiz Bot'}</div>
+                            <span id="status-${id}" class="status-pill status-offline">Offline</span>
                         </div>
                         
-                        <strong>Terminal</strong>
-                        <div id="term-${id}" class="terminal"></div>
-                        <div class="flex-row">
-                            <input type="text" id="cmd-${id}" placeholder="Komut...">
-                            <button class="btn btn-blue" onclick="sendBotCmd('${id}')">Yaz</button>
+                        <div style="font-size: 11px; color: var(--accent-cyan); margin-bottom: 10px;">
+                            ⏱ Süre: <span id="uptime-${id}">0s 0d 0s</span>
                         </div>
 
-                        <div class="flex-row">
-                            <div style="flex:1">
-                                <strong>Tab Listesi & Scoreboard</strong>
+                        <div class="input-grid">
+                            <input type="text" id="login-${id}" class="input-field" placeholder="Kullanıcı Adı" value="${b.login}" onchange="saveBot('${id}')">
+                            <input type="text" id="ver-${id}" class="input-field" placeholder="Sürüm (1.20.6)" value="${b.version}" onchange="saveBot('${id}')">
+                        </div>
+                        <input type="text" id="ip-${id}" class="input-field" placeholder="IP (oyna.aesirmc.com)" value="${b.ip}" onchange="saveBot('${id}')" style="margin-bottom:8px;">
+                        <input type="text" id="sub-${id}" class="input-field" placeholder="Alt Sunucu (/gir asmp)" value="${b.subServer || ''}" onchange="saveBot('${id}')" style="margin-bottom:12px;">
+
+                        <div style="display:flex; gap:8px; margin-bottom:12px;">
+                            <button class="btn btn-success" style="flex:1;" onclick="socket.emit('start_bot', '${id}')">Başlat</button>
+                            <button class="btn btn-danger" style="flex:1;" onclick="socket.emit('stop_bot', '${id}')">Durdur</button>
+                            <button class="btn btn-danger" onclick="deleteBot('${id}')">🗑</button>
+                        </div>
+
+                        <div id="term-${id}" class="terminal-box"></div>
+                        <div style="display:flex; gap:8px; margin-bottom:8px;">
+                            <input type="text" id="cmd-${id}" class="input-field" placeholder="Komut yazın...">
+                            <button class="btn btn-primary" onclick="sendBotCmd('${id}')">Yaz</button>
+                        </div>
+
+                        <div class="data-panel">
+                            <div>
+                                <div class="data-title">TAB & SCOREBOARD</div>
                                 <div id="tab-${id}" class="data-box">Veri bekleniyor...</div>
                             </div>
-                            <div style="flex:1">
-                                <strong>Radar</strong>
-                                <div id="radar-${id}" class="data-box">Kimse yok</div>
+                            <div>
+                                <div class="data-title">RADAR</div>
+                                <div id="radar-${id}" class="data-box"></div>
                             </div>
                         </div>
                     </div>
@@ -155,4 +229,4 @@
         }
     </script>
 </body>
-  </html>
+</html>
