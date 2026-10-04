@@ -1,6 +1,42 @@
 # MC Multi Bot Panel (Minecraft-Protocol Tabanlı)
 
-Bu proje Render üzerinde çalışmak üzere Node.js ve `minecraft-protocol` kütüphanesi kullanılarak geliştirilmiş bir çoklu Minecraft bot yönetim panelidir. 
+Bu proje Render üzerinde çalışmak üzere Node.js ve `minecraft-protocol` kütüphanesi kullanılaMC Multi Bot Panel (Minecraft-Protocol Tabanlı)
+
+Minecraft sunucularında (özellikle 1.21.11 ve altı sürümlerde) çoklu AFK bot yönetimi sağlayan, Render uyumlu modern Node.js web paneli.
+
+Sürüm Notları (v1.3.0 - Bota Özel Terminaller ve Gelişmiş Yönetim)
+
+Yenilikler ve Düzenlemeler:
+
+[x] Global Terminal Kaldırıldı: Ekranı kaplayan ve karmaşa yaratan en üstteki devasa genel terminal kaldırıldı. Artık her botun kendi kartı içinde sadece o bota ait logları gösteren Kişisel Terminaller bulunuyor.
+
+[x] Hızlı Menü Butonları (Toolbar): Her bot kartının içine /gir pvp ve /gir faction gibi sık kullanılan alt sunucu geçiş komutlarını tek tıkla göndermeni sağlayan hızlı eylem butonları eklendi.
+
+[x] Gelişmiş Anti-AFK (Protocol Tabanlı): Mineflayer kullanılmadan, doğrudan minecraft-protocol ile look (kafa çevirme) paketleri gönderilerek sunucuların botu "hareketsiz" algılayıp atması engellendi. Bu özellik her bot için özel bir butonla açılıp kapatılabiliyor.
+
+[x] Dinamik Grid (Izgara) Tasarımı: Yeni eklenen botlar yan yana şık kutular (kartlar) halinde sıralanacak şekilde arayüz yeniden kodlandı.
+
+[x] Canlı Durum Göstergesi: Botların isminin yanına anlık durumlarını (Online = Yeşil, Offline/Hata = Kırmızı) belirten neon durum noktaları (Status Dot) eklendi.
+
+[x] Toplu Kapatma: Üst panele acil durumlar için "Tüm Botları Kapat" butonu yerleştirildi.
+
+Önceki Sürümler
+
+v1.2.0 - Mobil Arayüz & Auth Sistemi
+
+Şifre ile giriş (/login <şifre>) otomasyonu eklendi.
+
+Mobil uyumlu akordiyon (açılır/kapanır) kart tasarımı yapıldı.
+
+v1.1.0 - Protocol Fix
+
+1.19+ ve 1.20+ sürümlerindeki /gir komutlarında yaşanan socketClosed hatası (Chat Command protokolü ile) çözüldü.
+
+v1.0.0 - İlk Çıkış
+
+minecraft-protocol altyapısı kuruldu.
+
+Temel bot bağlama ve log okuma işlemleri yapıldı.rak geliştirilmiş bir çoklu Minecraft bot yönetim panelidir. 
 
 ## Sürüm Notları (v1.0.0)
 
